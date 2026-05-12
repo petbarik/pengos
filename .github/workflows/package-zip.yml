@@ -1,0 +1,31 @@
+name: Auto-Zip PengOS
+
+on:
+  push:
+    paths:
+      - 'pengos/**'
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Create Zip
+        run: |
+          cd pengos
+          zip -r ../pengos.zip ./*
+          cd ..
+
+      - name: Commit and Push Zip
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add pengos.zip
+          git commit -m "chore: update pengos.zip [skip ci]" || echo "No changes to commit"
+          git push
